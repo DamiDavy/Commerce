@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>WatchList</h2>
+	{% if auctions %}
+	{% for auction in auctions %}
+	<div class="container p-3 my-3 border">
+		<div class="row">
+			<div class="col-md-2">
+		<a href="{% url 'listing' auction.id %}"><img src="{{auction.image.url}}" alt="{{auction.title}}" width="140" height="160" style="object-fit: cover;"></a></div>
+		<div class="col-md-10">
+		<h5>{{auction.title}}</h5>
+		<p>{{auction.description}}</p>
+		<h6>Current Price: 
+		{% if auction.startbid %} 
+		{{ auction.startbid }}
+		{% else %}
+		{{ auction.start }}
+		{% endif %}$</h6></div></div>
+	</div>
+	{% endfor %}
+	{% else %}
+	<p>No Listings</p>
+	{% endif %}
+
+{% endblock %}
