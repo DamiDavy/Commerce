@@ -1,46 +1,54 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h4>Active Listings</h4>
-{% if auctions %}
-	{% for auction in auctions %}
-	<div class="container p-2 my-1 border">
-		<div class="row">
-			<div class="col-md-2">
-		<a href="{% url 'listing' auction.id %}"><img src="{{ auction.image.url }}" alt="{{auction.title}}" width="140" height="160" style="object-fit: cover;"></a></div>
-		<div class="col-md-10">
-		<h5>{{auction.title}}</h5>
-		<p>{{auction.description}}</p>
-		<h6>Current Price: 
-		{% if auction.startbid %} 
-		{{ auction.startbid }}
-		{% else %}
-		{{ auction.start }}
-		{% endif %}$</h6></div></div>
-	</div>
+  <h4>Active Listings</h4>
+	{% if auctions %}
+		{% for auction in auctions %}
+			<div class="container p-2 my-1 border">
+				<div class="row">
+					<div class="col-md-2">
+						<a href="{% url 'listing' auction.id %}"><img src="{{ auction.image.url }}" 
+						alt="{{auction.title}}" width="140" height="160" style="object-fit: cover;"></a>
+					</div>
+					<div class="col-md-10">
+						<h5>{{auction.title}}</h5>
+						<p>{{auction.description}}</p>
+						<h6>Current Price: 
+						{% if auction.startbid %} 
+							{{ auction.startbid }}
+						{% else %}
+							{{ auction.start }}
+						{% endif %}$</h6>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	{% else %}
+	<p>No Active Listings</p>
+	{% endif %}
+	<hr>
+	<div>
+		<h4>Closed Listings</h4>
+		{% for no in nonactive %}
+			<div class="container p-2 my-1 border" style="opacity: 0.5; opacity:hover: 1.0;">
+				<div class="row">
+					<div class="col-md-2">
+						<a href="{% url 'listing' no.id %}"><img src="{{no.image.url}}" 
+						alt="{{no.title}}" width="140" height="160" style="object-fit: cover;"></a>
+					</div>
+					<div class="col-md-10">
+						<h5>{{no.title}}</h5>
+						<p>{{no.description}}</p>
+						<h6>Current Price:
+						{% if no.startbid %} 
+							{{ no.startbid }}
+						{% else %}
+							{{ no.start }}
+						{% endif %}$</h6>
+					</div>
+				</div>
+			</div>
+		</div>
 	{% endfor %}
-{% else %}
-<p>No Active Listings</p>
-{% endif %}
-<hr>
-<div>
-<h4>Closed Listings</h4>
-{% for no in nonactive %}
-<div class="container p-2 my-1 border" style="opacity: 0.5; opacity:hover: 1.0;">
-		<div class="row">
-			<div class="col-md-2">
-	<a href="{% url 'listing' no.id %}"><img src="{{no.image.url}}" alt="{{no.title}}" width="140" height="160" style="object-fit: cover;"></a></div>
-	<div class="col-md-10">
-	<h5>{{no.title}}</h5>
-	<p>{{no.description}}</p>
-	<h6>Current Price:
-		{% if no.startbid %} 
-		{{ no.startbid }}
-		{% else %}
-		{{ no.start }}
-		{% endif %}$</h6></div></div>
-</div>
-</div>
-{% endfor %}
 {% endblock %}
 

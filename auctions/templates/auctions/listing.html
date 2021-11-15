@@ -1,89 +1,100 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>{{listing.title}}</h2>
-    <div class="row">
-		<div class="col-md-3"><img src="{{listing.image.url}}" alt="{{listing.title}}" width="280" height="400" style="float:left; object-fit: cover;">
+	<h2>{{listing.title}}</h2>
+	<div class="row">
+		<div class="col-md-3">
+			<img src="{{listing.image.url}}" alt="{{listing.title}}" width="280" 
+			height="400" style="float:left; object-fit: cover;">
 		</div>
 		<div class="col-md-9">
 			<p>{{listing.description}}</p>
 			<p>by {{listing.user}}
-			{% if user.is_authenticated and user.id == listing.user.id and listing.active %}
-			<a href="{% url 'close' listing.id %}"><button type="button" class="btn btn-outline-danger">Close The Auction</button></a>{% endif %}</p>
+				{% if user.is_authenticated and user.id == listing.user.id and listing.active %}
+					<a href="{% url 'close' listing.id %}"><button type="button" 
+					class="btn btn-outline-danger">Close The Auction</button></a>
+				{% endif %}
+			</p>
 			<br>			
 
 			<h4>Current Price: 
-			{% if listing.startbid %} 
-			{{ listing.startbid }}
-			{% else %}
-			{{ listing.start }}
-			{% endif %}$</h4>
+				{% if listing.startbid %} 
+					{{ listing.startbid }}
+				{% else %}
+					{{ listing.start }}
+				{% endif %}$
+			</h4>
 			<p>Categories: {% for item in group %}{{item}} {% endfor %}</p>
 
 			{% if user.is_authenticated %}
-				
+			
 				{% if listing.active %}
-				
+			
 					{% if added %}
-					<a href="{% url 'wish' listing.id %}">Remove From WhatchList</a><br>
+						<a href="{% url 'wish' listing.id %}">Remove From WhatchList</a><br>
 					{% else %}
-					<a href="{% url 'wish' listing.id %}">Add To WhatchList</a><br>
+						<a href="{% url 'wish' listing.id %}">Add To WhatchList</a><br>
 					{% endif %}
 					<br>
 
-					<!--p>{% for bid in bids %} {{bid.price}} by {{bid.user}} {% endfor %}</p>-->
+					<p>{{ bids.count }} bid(s) so far</p>
+					{% if listing.buyer == user.username %}
+						<p>Your bid is the current</p>
+					{% endif %}
 
 					<form action="{% url 'bid' listing.id %}" method="post">
-				        {% csrf_token %}
-				        <label for="uname">Add New Bid:</label>
-				    	<input type="number" name="bid" id="uname" placeholder="Enter New Bid">
-				        <input type="submit" value="Save" class="btn btn-primary">
+						{% csrf_token %}
+						<label for="uname">Add New Bid:</label>
+						<input type="number" name="bid" id="uname" placeholder="Enter New Bid">
+						<input type="submit" value="Save" class="btn btn-primary">
 					</form>
 
-					{% if mes %}
-					<div class="alert alert-warning">{{ mes }}</div>
+					{% if mes == "Your bid was saved" %}
+						<div class="alert alert-success">{{ mes }}</div>
+					{% elif mes == "Your bid should be greater than previous" %}
+						<div class="alert alert-warning">{{ mes }}</div>
 					{% endif %}
 
 					<br>
 
 				{% else %}
 					{% if listing.buyer == user.username %}
-					<p>You've won this auction with price {{listing.startbid}}$!</p>
+						<p class="alert alert-success">You've won this auction with price {{listing.startbid }}$!</p>
 					{% endif %}
-				<p>Listing nave been closed with price {{listing.startbid}}$.</p>
+					<p>Listing nave been closed with price {{listing.startbid }}$.</p>
 				{% endif %}
 
+				{% if listing.active %}
+				<div>
+					<form action="{% url 'listing' listing.id %}" id="usrform" method="post">
+						{% csrf_token %}
+						<div class="form-group">
+							<label for="uname">Add A Comment:</label>
+							<textarea class="form-control" name="comment" form="usrform" 
+							placeholder="Here..." rows="3"></textarea>
+						</div>
+						<input type="submit" value="Save A Comment" class="btn btn-outline-primary btn-block">
+					</form>
+				</div>
 				{% endif %}
 
-
-			{% if listing.active %}
-			<div>
-			<form action="{% url 'listing' listing.id %}" id="usrform" method="post">
-			{% csrf_token %}
-			<div class="form-group">
-			<label for="uname">Add A Comment:</label>
-			<textarea class="form-control" name="comment" form="usrform" placeholder="Right here..." rows="3"></textarea>
-			</div>
-			<input type="submit" value="Save A Comment" class="btn btn-outline-primary btn-block">
-			</form>
 			{% endif %}
-			</div>
+		</div>
+	</div>
 
-			</div>
 
-			<hr>
-			{% if comments %}
-			<h6 class="p-3 ml-3">Comments</h6>
-			{% for comment in comments %}	
+	<hr>
+	<h3 class="p-3 ml-3">Comments</h3>
+	{% if comments %}
+		{% for comment in comments %}	
 			<div class="container p-3 my-1 border">
 				by <strong>{{comment.user.username}}</strong><br>
 				{{comment.texty}}
 			</div>
-			{% endfor %}
-			{% else %}
-			<p>No comments yet.</p>
-			{% endif %}
-		
-	</div>
+		{% endfor %}
+	{% else %}
+		<p>No comments yet</p>
+	{% endif %}	
+	
 {% endblock %}
 
